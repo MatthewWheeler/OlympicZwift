@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is Zwift in the Olympics Yet?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Comic+Neue:wght@700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --olympic-blue: #0081C8;
+      --olympic-yellow: #FCB131;
+      --olympic-black: #000000;
+      --olympic-green: #00A651;
+      --olympic-red: #EE334E;
+      --zwift-orange: #FF6A00;
+    }
+
+    body {
+      background: #0a0a0a;
+      font-family: 'Comic Neue', cursive;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E🚴%3C/text%3E%3C/svg%3E") 16 16, auto;
+    }
+
+    /* Scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.05) 2px,
+        rgba(0,0,0,0.05) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur) ease-in-out infinite;
+      opacity: 0;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    /* Olympic rings - decorative */
+    .rings {
+      display: flex;
+      gap: -10px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .ring {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 6px solid;
+      margin: 0 -4px;
+      position: relative;
+    }
+    .ring:nth-child(1) { border-color: var(--olympic-blue); }
+    .ring:nth-child(2) { border-color: var(--olympic-yellow); margin-top: 20px; }
+    .ring:nth-child(3) { border-color: var(--olympic-black); border-color: #888; }
+    .ring:nth-child(4) { border-color: var(--olympic-green); margin-top: 20px; }
+    .ring:nth-child(5) { border-color: var(--olympic-red); }
+
+    .question {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 6vw, 64px);
+      color: #ccc;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 30px rgba(255,106,0,0.3);
+      animation: fadeSlideIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .answer-wrapper {
+      position: relative;
+      margin: 20px 0 30px;
+    }
+
+    .answer {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(100px, 30vw, 300px);
+      line-height: 0.9;
+      background: linear-gradient(135deg, var(--zwift-orange), #FF0040, var(--zwift-orange));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 2s ease infinite, punchIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      filter: drop-shadow(0 0 40px rgba(255,106,0,0.5));
+      display: block;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes punchIn {
+      0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+      70% { transform: scale(1.1) rotate(2deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* Sad emoji that bounces */
+    .sad-emoji {
+      font-size: clamp(60px, 15vw, 120px);
+      display: block;
+      margin: 10px 0;
+      animation: bounce 1s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(255,200,0,0.4));
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    .subtext {
+      font-size: clamp(14px, 3vw, 22px);
+      color: #888;
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      animation: fadeSlideIn 0.8s 0.3s ease both;
+    }
+
+    .subtext em {
+      color: var(--zwift-orange);
+      font-style: normal;
+    }
+
+    /* Meme card */
+    .meme-card {
+      background: linear-gradient(135deg, #111, #1a1a1a);
+      border: 2px solid #333;
+      border-radius: 16px;
+      padding: 24px 32px;
+      max-width: 500px;
+      margin: 10px auto 30px;
+      animation: fadeSlideIn 0.8s 0.5s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .meme-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--olympic-blue), var(--olympic-yellow), var(--olympic-green), var(--olympic-red), var(--zwift-orange));
+    }
+
+    .meme-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .meme-text {
+      font-size: clamp(13px, 2.5vw, 16px);
+      color: #bbb;
+      line-height: 1.7;
+    }
+
+    .meme-text strong {
+      color: white;
+    }
+
+    /* Progress bar parody */
+    .progress-section {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      animation: fadeSlideIn 0.8s 0.7s ease both;
+    }
+
+    .progress-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .progress-bar-bg {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 100px;
+      height: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--zwift-orange), #FF0040);
+      border-radius: 100px;
+      transition: width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+    }
+
+    .progress-bar-fill::after {
+      content: '🚴';
+      position: absolute;
+      right: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+    }
+
+    .progress-pct {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      color: #555;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* Last updated */
+    .last-updated {
+      font-size: 12px;
+      color: #444;
+      letter-spacing: 1px;
+      animation: fadeSlideIn 0.8s 1s ease both;
+    }
+
+    /* Confetti burst on click */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 2px;
+      animation: confettiFall 1s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+    }
+
+    /* Footer easter egg */
+    .footer {
+      position: fixed;
+      bottom: 16px;
+      font-size: 11px;
+      color: #2a2a2a;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+    }
+    .footer:hover { color: #555; }
+
+    /* Shake animation for the NO */
+    .shake {
+      animation: shake 0.5s ease !important;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-5deg) scale(1.05); }
+      40% { transform: rotate(5deg) scale(1.1); }
+      60% { transform: rotate(-3deg) scale(1.05); }
+      80% { transform: rotate(3deg); }
+    }
+
+    .tooltip {
+      font-size: 11px;
+      color: #333;
+      margin-top: 6px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <div class="rings">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+
+  <div class="question">Is Zwift in the Olympics yet?</div>
+
+  <div class="answer-wrapper">
+    <span class="answer" id="mainAnswer" title="Click me!">NO.</span>
+  </div>
+
+  <span class="sad-emoji">😭</span>
+
+  <p class="subtext">
+    Despite being the world's most popular virtual cycling platform,<br>
+    Zwift remains <em>conspicuously absent</em> from the Olympic program.<br>
+    Your Watopia watts don't count for gold. Sorry.
+  </p>
+
+  <div class="meme-card">
+    <div class="meme-title">📰 Current Status</div>
+    <div class="meme-text">
+      The IOC has recognized esports as a category and even ran an <strong>Olympic Esports Series</strong> featuring virtual cycling. Zwift hosted an <strong>Olympic Virtual Series</strong> event in 2021. And yet... here we are. Still <em>not</em> on the official Olympic schedule. <strong>The dream pedals on.</strong>
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-label">🏅 Progress toward Olympic inclusion</div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-pct" id="progressPct">Loading effort...</div>
+    <div class="tooltip">*(totally scientific measurement)</div>
+  </div>
+
+  <div class="last-updated">Last checked: <span id="dateStamp"></span> &nbsp;·&nbsp; Answer: still no.</div>
+</div>
+
+<div class="footer">© olympiczwift.com — we'll update this page when hell freezes over... or the IOC votes yes</div>
+
+<script>
+  // Stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    s.style.animationDelay = (Math.random() * 5) + 's';
+    s.style.width = s.style.height = (1 + Math.random() * 3) + 'px';
+    starsEl.appendChild(s);
+  }
+
+  // Date
+  document.getElementById('dateStamp').textContent = new Date().toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  // Progress bar animation
+  setTimeout(() => {
+    const fill = document.getElementById('progressFill');
+    const pct = document.getElementById('progressPct');
+    const val = 23; // fake but plausible
+    fill.style.width = val + '%';
+    pct.textContent = val + '% (we think?)';
+  }, 800);
+
+  // Click the NO for confetti
+  const answer = document.getElementById('mainAnswer');
+  answer.style.cursor = 'pointer';
+
+  const colors = ['#FF6A00','#FCB131','#0081C8','#EE334E','#00A651','#fff'];
+  const msgs = ['STILL NO.', 'NOPE.', 'NOT YET.', 'LOL NO.', 'NO!!', 'NADA.', 'NEVER?'];
+  let msgIdx = 0;
+
+  answer.addEventListener('click', (e) => {
+    // Shake
+    answer.classList.remove('shake');
+    void answer.offsetWidth;
+    answer.classList.add('shake');
+
+    // Cycle messages
+    msgIdx = (msgIdx + 1) % msgs.length;
+    answer.textContent = msgs[msgIdx];
+
+    // Confetti
+    for (let i = 0; i < 30; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = e.clientX + (Math.random() * 100 - 50) + 'px';
+      c.style.top = e.clientY + 'px';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.transform = `rotate(${Math.random()*360}deg)`;
+      c.style.animationDelay = Math.random() * 0.3 + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 1200);
+    }
+  });
+</script>
+</body>
+</html>
